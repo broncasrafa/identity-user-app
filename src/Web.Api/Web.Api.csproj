@@ -23,7 +23,7 @@
 
 	<ItemGroup>
 		<Folder Include="Controllers\" />
-		<Folder Include="Core\Application\" />
+		<Folder Include="Core\Application\DTO\Response\" />
 		<Folder Include="Infrastructure\Database\" />
 		<Folder Include="Infrastructure\Repository\" />
 	</ItemGroup>
