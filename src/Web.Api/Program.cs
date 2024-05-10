@@ -21,8 +21,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddFluentValidation();
+builder.Services.AddSettings(configuration);
 builder.Services.AddIdentityUserDbContext(configuration);
 builder.Services.AddIdentityConfigurations();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
+builder.Services.AddJwtAuthentication(configuration);
 
 
 var app = builder.Build();
@@ -31,6 +35,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
