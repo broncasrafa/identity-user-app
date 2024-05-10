@@ -22,6 +22,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddFluentValidation();
 builder.Services.AddIdentityUserDbContext(configuration);
+builder.Services.AddIdentityConfigurations();
 
 
 var app = builder.Build();
