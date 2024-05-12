@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -7,12 +9,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Web.Api.Infrastructure.Database.Context;
 using Web.Api.Core.Application.Settings;
-using Web.Api.Core.Application.Validators.User;
+using Web.Api.Core.Application.Validators.Account;
+using Web.Api.Core.Application.Abstractions.Account;
 using Web.Api.Core.Application.Abstractions.JwtToken;
 using Web.Api.Core.Application.Services;
 using Web.Api.Core.Domain.Entities;
-using FluentValidation;
-using Web.Api.Core.Application.Abstractions.Account;
+using Web.Api.Filters;
+using FluentValidation.AspNetCore;
 
 namespace Web.Api.DependencyInjection;
 
@@ -20,7 +23,11 @@ public static class ServiceCollectionsRegistration
 {
     public static void AddFluentValidation(this IServiceCollection services)
     {
-        services.AddValidatorsFromAssemblyContaining<UserRegistrationValidator>();
+        services
+            .AddMvcCore(options => options.Filters.Add(typeof(ValidationFilter)))
+            .AddFluentValidation(c => c.RegisterValidatorsFromAssemblyContaining<UserRegistrationValidator>());
+
+        services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
     }
 
     public static void AddIdentityUserDbContext(this IServiceCollection services, IConfiguration configuration)
@@ -93,5 +100,24 @@ public static class ServiceCollectionsRegistration
                     ValidateAudience = false
                 };
             });
+    }
+
+    public static void AddSwaggerOpenAPI(this IServiceCollection services)
+    {
+        services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+            {
+                Title = "Identity User Web Api",
+                Version = "v1",
+                Description = "Demonstração dos recursos disponíveis na api",
+                Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                {
+                    Name = "Rafael Francisco",
+                    Email = "rsfrancisco.applications@gmail.com",
+                    Url = new Uri("https://github.com/broncasrafa")
+                }
+            });
+        });
     }
 }

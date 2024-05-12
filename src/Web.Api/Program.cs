@@ -19,7 +19,8 @@ IConfiguration configuration = new ConfigurationBuilder()
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddHealthChecks();
+builder.Services.AddSwaggerOpenAPI();
 builder.Services.AddFluentValidation();
 builder.Services.AddSettings(configuration);
 builder.Services.AddIdentityUserDbContext(configuration);
@@ -32,11 +33,21 @@ builder.Services.AddJwtAuthentication(configuration);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+    app.UseDeveloperExceptionPage();
+
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Identity User Web Api");
+    options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+    options.InjectStylesheet("/swagger-ui/swagger-dark.css");
+});
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStaticFiles();
+app.UseHealthChecks("/health");
 app.MapControllers();
 
 app.Run();
